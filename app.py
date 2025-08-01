@@ -1,4 +1,5 @@
 
+
 import openai
 import pandas as pd
 import streamlit as st
@@ -30,7 +31,7 @@ Eres un asesor financiero experto. Evalúa esta propiedad:
 El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una recomendación breve y profesional.
 """
 
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Eres un asesor experto en inversiones inmobiliarias."},
