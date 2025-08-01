@@ -4,7 +4,7 @@ import openai
 import pandas as pd
 import streamlit as st
 import os
-from dotenv import load_dotenv
+from dotenv import OpenAI
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
