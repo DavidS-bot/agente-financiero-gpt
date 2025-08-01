@@ -6,7 +6,7 @@ import streamlit as st
 import os
 from openai import OpenAI
 
-load_dotenv()
+openai()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 st.set_page_config(page_title="Agente Financiero GPT", page_icon="📊")
