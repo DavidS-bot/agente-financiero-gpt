@@ -1,5 +1,6 @@
 
 
+
 import openai
 import pandas as pd
 import streamlit as st
@@ -32,7 +33,7 @@ El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una re
 """
 
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Eres un asesor experto en inversiones inmobiliarias."},
                 {"role": "user", "content": prompt}
