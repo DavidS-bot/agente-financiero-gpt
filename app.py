@@ -1,20 +1,24 @@
 
 
-import openai
-import pandas as pd
 import streamlit as st
+import pandas as pd
+from openai import OpenAI
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Cargar la API Key desde los secretos de Streamlit
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# Configurar la página
 st.set_page_config(page_title="Agente Financiero GPT", page_icon="📊")
 st.title("📈 Asistente de Inversión Inmobiliaria con GPT")
 
+# Subida del archivo Excel
 uploaded_file = st.file_uploader("📂 Sube tu Excel con propiedades", type=["xlsx"])
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file)
     st.dataframe(df)
 
+    # Validación de columnas necesarias
     columnas_requeridas = [
         "Precio Compra (€)",
         "Alquiler Mensual (€)",
@@ -27,6 +31,7 @@ if uploaded_file:
     if not all(col in df.columns for col in columnas_requeridas):
         st.error("❌ El archivo Excel no contiene todas las columnas requeridas.")
     else:
+        # Función para analizar propiedad con GPT
         def analizar_propiedad(row):
             prompt = f"""
 Eres un asesor financiero experto. Evalúa esta propiedad:
@@ -39,7 +44,8 @@ Eres un asesor financiero experto. Evalúa esta propiedad:
 
 El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una recomendación breve y profesional.
 """
-            response = openai.ChatCompletion.create(
+
+            respuesta = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "Eres un asesor experto en inversiones inmobiliarias."},
@@ -47,16 +53,20 @@ El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una re
                 ],
                 temperature=0.3
             )
-            return response["choices"][0]["message"]["content"]
+            return respuesta.choices[0].message.content
 
-        with st.spinner("Analizando con GPT..."):
+        # Aplicar el análisis fila por fila
+        with st.spinner("🧠 Analizando con GPT..."):
             df["Recomendación GPT"] = df.apply(analizar_propiedad, axis=1)
 
         st.success("✅ Análisis completado")
         st.dataframe(df)
 
+        # Botón para descargar el Excel con recomendaciones
         st.download_button(
             label="📥 Descargar Excel con análisis",
-            data=df.to_excel(index=False),
-            file_name="Analisis_GPT.xlsx"
+            data=df.to_excel(index=False, engine="openpyxl"),
+            file_name="Analisis_GPT.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
