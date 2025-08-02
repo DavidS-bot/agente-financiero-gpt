@@ -1,15 +1,15 @@
-
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
 
-# Cliente OpenAI (nuevo SDK)
+# Autenticación con secretos de Streamlit
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# UI básica
+# Configuración básica de la app
 st.set_page_config(page_title="Agente Financiero GPT", page_icon="📊")
 st.title("📈 Asistente de Inversión Inmobiliaria con GPT")
 
+# Carga de archivo Excel
 uploaded_file = st.file_uploader("📂 Sube tu Excel con propiedades", type=["xlsx"])
 
 if uploaded_file:
@@ -36,7 +36,7 @@ Eres un asesor financiero experto. Evalúa esta propiedad:
 
 El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una recomendación breve y profesional.
 """
-            completion = client.chat.completions.create(
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "Eres un asesor experto en inversiones inmobiliarias."},
@@ -44,9 +44,9 @@ El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una re
                 ],
                 temperature=0.3
             )
-            return completion.choices[0].message.content
+            return response.choices[0].message.content
 
-        with st.spinner("Analizando propiedades con GPT..."):
+        with st.spinner("Analizando con GPT..."):
             df["Recomendación GPT"] = df.apply(analizar_propiedad, axis=1)
 
         st.success("✅ Análisis completado")
@@ -58,4 +58,3 @@ El objetivo es lograr al menos un 10% de rentabilidad sobre el equity. Da una re
             file_name="Analisis_GPT.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
